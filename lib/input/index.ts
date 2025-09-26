@@ -3,6 +3,7 @@ import type { Keymaps } from '@lib/keymaps';
 import { state, actions } from '@lib/state';
 import type { Cursor } from '@lib/cursor';
 import type { BufferManager } from '@lib/buffer/manager';
+import type { CommandManager } from '@lib/command/manager';
 
 export class InputManager {
     private keyQueue: string[] = [];
@@ -22,6 +23,8 @@ export class InputManager {
 
         const key = this.keyboardEventToString(event);
         if (!key) return;
+
+        const mode = state.mode();
 
         // Check for a pending action first
         const pending = state.pendingAction();
@@ -51,7 +54,29 @@ export class InputManager {
             return;
         }
 
-        const mode = state.mode();
+        if (mode === 'COMMAND') {
+            switch (key) {
+                case '<Esc>':
+                    actions.setMode('NORMAL');
+                    actions.setCommandLineText('');
+                    break;
+                case '<Enter>':
+                    const commandManager = this.container.get<CommandManager>('CommandManager')!;
+                    commandManager.execute(state.commandLineText());
+                    actions.setMode('NORMAL');
+                    actions.setCommandLineText('');
+                    break;
+                case '<BS>':
+                    actions.setCommandLineText(state.commandLineText().slice(0, -1));
+                    break;
+                default:
+                    if (key.length === 1) {
+                        actions.setCommandLineText(state.commandLineText() + key);
+                    }
+                    break;
+            }
+            return;
+        }
 
         // INSERT mode has its own distinct logic.
         if (mode === 'INSERT') {

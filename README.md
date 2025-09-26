@@ -27,6 +27,7 @@ The architecture is designed to be modular and extensible. Learn more about the 
 | [**REACTIVITY.md**](./docs/REACTIVITY.md) | An explanation of the custom reactivity system that powers the UI. |
 | [**STATE.md**](./docs/STATE.md) | How global reactive state is managed. |
 | [**RENDERER.md**](./docs/RENDERER.md) | How the editor is drawn onto the HTML canvas. |
+| [**STATUS_BAR.md**](./docs/STATUS_BAR.md) | How the extensible status bar is managed and rendered. |
 | [**INPUT_MANAGER.md**](./docs/INPUT_MANAGER.md) | How keyboard input and Vim's command sequences are processed. |
 | [**KEYMAPS.md**](./docs/KEYMAPS.md) | How to define and manage keybindings for different modes. |
 | [**BUFFER.md**](./docs/BUFFER.md) | The data structure for holding and manipulating text. |

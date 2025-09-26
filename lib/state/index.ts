@@ -23,6 +23,7 @@ const [activeBufferId, setActiveBufferId] = createSignal<string | null>(null);
 const [cursor, setCursor] = createSignal<Cursor>(new Cursor());
 const [pendingAction, setPendingAction] = createSignal<PendingAction | null>(null);
 const [selectionAnchor, setSelectionAnchor] = createSignal<Position | null>(null);
+const [commandLineText, setCommandLineText] = createSignal<string>('');
 
 // --- Derived State (Memos) ---
 
@@ -52,6 +53,7 @@ export const state = {
     pendingAction,
     selectionAnchor,
     selection,
+    commandLineText,
 };
 
 export const actions = {
@@ -60,6 +62,7 @@ export const actions = {
     setCursor,
     setPendingAction,
     setSelectionAnchor,
+    setCommandLineText,
     setCursorPosition: (pos: Position) => {
         const cursor = state.cursor();
         cursor.setRow(pos.row);

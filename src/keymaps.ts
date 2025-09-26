@@ -26,6 +26,12 @@ function registerModeSwitches(keymaps: Keymaps) {
         actions.setMode('NORMAL');
         actions.setSelectionAnchor(null);
     }, { description: 'Exit Visual Mode' });
+
+    const commandModeKeys: Modes[] = ['NORMAL', 'VISUAL'];
+    keymaps.set(commandModeKeys, ':', () => {
+        actions.setMode('COMMAND');
+        actions.setSelectionAnchor(null); // Clear selection when entering command mode
+    }, { description: 'Enter Command Mode' });
 }
 
 function registerMotions(keymaps: Keymaps, container: Container) {
