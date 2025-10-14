@@ -1,6 +1,6 @@
 # nvim.ts
 
-A small, educational, browser-based text editor inspired by Neovim, built from scratch with TypeScript and a custom reactivity system.
+A powerful, extensible browser-based text editor inspired by Neovim, featuring a complete plugin architecture with Telescope-style fuzzy finding, built from scratch with TypeScript and a custom reactivity system.
 
 ## Purpose
 

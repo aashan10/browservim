@@ -24,6 +24,8 @@ const [cursor, setCursor] = createSignal<Cursor>(new Cursor());
 const [pendingAction, setPendingAction] = createSignal<PendingAction | null>(null);
 const [selectionAnchor, setSelectionAnchor] = createSignal<Position | null>(null);
 const [commandLineText, setCommandLineText] = createSignal<string>('');
+const [viewTop, setViewTop] = createSignal<number>(0);
+const [motionCount, setMotionCount] = createSignal<number>(0);
 
 // --- Derived State (Memos) ---
 
@@ -54,6 +56,7 @@ export const state = {
     selectionAnchor,
     selection,
     commandLineText,
+    viewTop,
 };
 
 export const actions = {
@@ -63,6 +66,7 @@ export const actions = {
     setPendingAction,
     setSelectionAnchor,
     setCommandLineText,
+    setViewTop,
     setCursorPosition: (pos: Position) => {
         const cursor = state.cursor();
         cursor.setRow(pos.row);

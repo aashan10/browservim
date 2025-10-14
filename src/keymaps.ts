@@ -12,11 +12,16 @@ const getActiveBuffer = (container: Container) => {
     return bufferId ? bufferManager.get(bufferId) : null;
 };
 
-function registerModeSwitches(keymaps: Keymaps) {
+function registerModeSwitches(keymaps: Keymaps, container: Container) {
     const cursor = state.cursor();
 
     // --- Mode Switching ---
-    keymaps.set('NORMAL', 'i', () => actions.setMode('INSERT'), { description: 'Enter Insert Mode' });
+    keymaps.set('NORMAL', 'i', () => {
+        const buffer = getActiveBuffer(container);
+        if (buffer && !buffer.config.readonly) {
+            actions.setMode('INSERT');
+        }
+    }, { description: 'Enter Insert Mode' });
     keymaps.set('INSERT', '<Esc>', () => actions.setMode('NORMAL'), { description: 'Enter Normal Mode' });
     keymaps.set('NORMAL', 'v', () => {
         actions.setMode('VISUAL');
@@ -32,6 +37,31 @@ function registerModeSwitches(keymaps: Keymaps) {
         actions.setMode('COMMAND');
         actions.setSelectionAnchor(null); // Clear selection when entering command mode
     }, { description: 'Enter Command Mode' });
+}
+
+function registerBufferActions(keymaps: Keymaps, container: Container) {
+    const bufferManager = container.get<BufferManager>('BufferManager')!;
+
+    const cycle = (direction: 'next' | 'prev') => {
+        const allBuffers = bufferManager.all();
+        const activeId = state.activeBufferId();
+        if (allBuffers.length < 2 || !activeId) return;
+
+        const currentIndex = allBuffers.indexOf(activeId);
+        let nextIndex;
+
+        if (direction === 'next') {
+            nextIndex = (currentIndex + 1) % allBuffers.length;
+        } else {
+            nextIndex = (currentIndex - 1 + allBuffers.length) % allBuffers.length;
+        }
+
+        const nextBufferId = allBuffers[nextIndex];
+        actions.setActiveBufferId(nextBufferId);
+    };
+
+    keymaps.set('NORMAL', ']b', () => cycle('next'), { description: 'Cycle to next buffer' });
+    keymaps.set('NORMAL', '[b', () => cycle('prev'), { description: 'Cycle to previous buffer' });
 }
 
 function registerMotions(keymaps: Keymaps, container: Container) {
@@ -190,6 +220,14 @@ function registerOperatorActions(keymaps: Keymaps, container: Container) {
             }
         }
     }, { description: 'Delete Character Before Cursor' });
+    keymaps.set('INSERT', '<Tab>', () => {
+        const buffer = getActiveBuffer(container);
+        if (buffer) {
+            const tabSize = 4; // Hardcoded for now, could be configurable
+            buffer.insertText(cursor.row(), cursor.col(), ' '.repeat(tabSize));
+            cursor.setCol(cursor.col() + tabSize);
+        }
+    }, { description: 'Insert Tab (4 spaces)' });
 
     // --- Visual Mode Operators ---
     keymaps.set('VISUAL', 'd', () => {
@@ -219,7 +257,8 @@ function registerEventHandlers(container: Container) {
 export function registerKeymaps(container: Container) {
     const keymaps = container.get<Keymaps>('Keymaps')!;
 
-    registerModeSwitches(keymaps);
+    registerModeSwitches(keymaps, container);
+    registerBufferActions(keymaps, container);
     registerMotions(keymaps, container);
     registerClipboardActions(keymaps, container);
     registerOperatorActions(keymaps, container);
